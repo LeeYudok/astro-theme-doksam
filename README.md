@@ -146,6 +146,26 @@ title: 소개
 }
 ```
 
+## 모서리 바꾸기
+
+모서리 반경은 변수 네 개로 정한다. 사이트의 전역 CSS 에서 덮어쓴다.
+
+| 변수 | 기본값 | 쓰이는 곳 |
+|---|---|---|
+| `--radius` | `10px` | 대표 이미지, 코드블록, 이전·다음 상자, 검색창 |
+| `--radius-control` | `8px` | 머리말 버튼, 목록의 작은 이미지 |
+| `--radius-inline` | `5px` | 글줄 안 코드, 포커스 표시 |
+| `--radius-pill` | `999px` | 섹션 표시, 태그 |
+
+```css
+:root {
+  --radius: 2px;
+  --radius-control: 2px;
+  --radius-inline: 2px;
+  --radius-pill: 2px;
+}
+```
+
 ## 코드 색 바꾸기
 
 코드블록은 밝은 화면에서 `github-light`, 어두운 화면에서 `github-dark` 로 칠한다. 다른 [Shiki 테마](https://shiki.style/themes)를 쓰려면 `astro.config.ts` 에 `light` 와 `dark` 를 함께 적는다.

@@ -57,7 +57,7 @@ const section = config.sections.find(s => s.id === sectionOf(post));
   }
   .section {
     padding: 0.05rem 0.5rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--accent-soft);
     color: var(--accent);
     font-size: 0.75rem;
@@ -95,7 +95,7 @@ const section = config.sections.find(s => s.id === sectionOf(post));
     aspect-ratio: 16 / 9;
     object-fit: cover;
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: var(--radius-control);
   }
   @media (max-width: 560px) {
     .thumb {
