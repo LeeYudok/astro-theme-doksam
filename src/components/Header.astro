@@ -95,7 +95,12 @@ const others = config.locales
   .skip:focus {
     top: 0.75rem;
   }
+  /* 스크롤해도 화면 위에 붙는다. 건너뛰기 링크(z-index 10)보다는 아래다. */
   .head {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--bg);
     border-bottom: 1px solid var(--line);
   }
   .head-in {
