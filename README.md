@@ -146,6 +146,22 @@ title: 소개
 }
 ```
 
+## 코드 색 바꾸기
+
+코드블록은 밝은 화면에서 `github-light`, 어두운 화면에서 `github-dark` 로 칠한다. 다른 [Shiki 테마](https://shiki.style/themes)를 쓰려면 `astro.config.ts` 에 `light` 와 `dark` 를 함께 적는다.
+
+```ts
+export default defineConfig({
+  markdown: {
+    shikiConfig: {
+      themes: { light: "min-light", dark: "night-owl" },
+    },
+  },
+});
+```
+
+테마는 `defaultColor: false` 를 항상 넣는다. 화면 전환에 맞춰 색을 바꾸려면 Shiki 가 색을 CSS 변수로 내야 하기 때문이다. `shikiConfig.theme`(한 가지 테마)만 적으면 쓰이지 않는다.
+
 ## 한계
 
 - 사이트가 도메인 루트에 있다고 본다. Astro `base` 설정은 지원하지 않는다.

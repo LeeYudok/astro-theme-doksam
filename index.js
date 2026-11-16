@@ -1,6 +1,8 @@
 const NAME = "astro-theme-doksam";
 const VIRTUAL = "virtual:doksam/config";
 
+const CODE_THEMES = { light: "github-light", dark: "github-dark" };
+
 const DEFAULTS = {
   title: "Blog",
   description: "",
@@ -46,6 +48,17 @@ function virtualConfig(config) {
   };
 }
 
+// theme.css 는 코드 색을 --shiki-light / --shiki-dark 변수로 읽는다. Shiki 가 색을
+// 인라인 스타일로 넣으면 밝게·어둡게 전환이 먹지 않으므로 변수로만 내게 한다.
+// 사이트가 themes 를 적었으면 그 값을 쓰고, 없으면 기본 한 쌍을 넣는다.
+function codeColors(shiki = {}) {
+  const hasThemes = Object.keys(shiki.themes ?? {}).length > 0;
+  return {
+    defaultColor: false,
+    ...(hasThemes ? {} : { themes: CODE_THEMES }),
+  };
+}
+
 /** @param {import("./index.d.ts").ThemeOptions} [options] */
 export default function doksam(options = {}) {
   const config = resolveConfig(options);
@@ -54,8 +67,11 @@ export default function doksam(options = {}) {
   return {
     name: NAME,
     hooks: {
-      "astro:config:setup": ({ injectRoute, updateConfig }) => {
-        updateConfig({ vite: { plugins: [virtualConfig(config)] } });
+      "astro:config:setup": ({ config: site, injectRoute, updateConfig }) => {
+        updateConfig({
+          vite: { plugins: [virtualConfig(config)] },
+          markdown: { shikiConfig: codeColors(site.markdown?.shikiConfig) },
+        });
 
         // 기본 언어는 접두사 없이, 나머지 언어는 /<언어>/ 아래에 같은 화면을 둔다.
         for (const locale of config.locales) {
