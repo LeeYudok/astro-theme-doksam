@@ -1,0 +1,179 @@
+---
+import config from "virtual:doksam/config";
+import Icon from "./Icon.astro";
+import { link, swapLang, t, tx } from "../lib/i18n.js";
+
+type Props = {
+  lang: string;
+  alternates?: Record<string, string>;
+  /** 글 화면에서 강조할 섹션 id. */
+  section?: string;
+};
+const { lang, alternates = {}, section } = Astro.props;
+
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isActive = (href: string, id?: string) => {
+  if (section) return id === section;
+  const target = href.replace(/\/$/, "");
+  return path === target || path.startsWith(target + "/");
+};
+
+const items = [
+  ...config.sections.map(s => ({
+    id: s.id,
+    label: tx(s.label, lang),
+    href: link("/" + s.id, lang),
+  })),
+  { id: undefined, label: t(lang, "allPosts"), href: link("/posts", lang) },
+  { id: undefined, label: t(lang, "tags"), href: link("/tags", lang) },
+  ...config.nav.map(n => ({ id: undefined, label: tx(n.label, lang), href: link(n.href, lang) })),
+];
+
+const others = config.locales
+  .filter(l => l !== lang)
+  .map(l => ({ code: l, href: alternates[l] ?? swapLang(Astro.url, l) }));
+---
+
+<a class="skip" href="#main">{t(lang, "skip")}</a>
+<header class="head">
+  <div class="wrap head-in">
+    <a class="brand" href={link("/", lang)}>{config.title}</a>
+    <nav class="nav" aria-label="Primary">
+      {
+        items.map(item => (
+          <a href={item.href} aria-current={isActive(item.href, item.id) ? "page" : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="tools">
+      <a href={link("/search", lang)} title={t(lang, "search")}>
+        <Icon name="magnifying-glass" />
+        <span class="sr-only">{t(lang, "search")}</span>
+      </a>
+      <button type="button" data-theme-toggle title={t(lang, "theme")}>
+        <Icon name="moon" class="when-light" />
+        <Icon name="sun" class="when-dark" />
+        <span class="sr-only">{t(lang, "theme")}</span>
+      </button>
+      {
+        others.map(o => (
+          <a class="lang" href={o.href} lang={o.code} hreflang={o.code}>
+            {o.code.toUpperCase()}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  document.querySelectorAll("[data-theme-toggle]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var root = document.documentElement;
+      var next = root.dataset.theme === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem("theme", next);
+      } catch (e) {}
+    });
+  });
+</script>
+
+<style>
+  .skip {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 10;
+    padding: 0.5rem 0.9rem;
+    background: var(--text);
+    color: var(--bg);
+    border-radius: 6px;
+  }
+  .skip:focus {
+    top: 0.75rem;
+  }
+  .head {
+    border-bottom: 1px solid var(--line);
+  }
+  .head-in {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 2rem;
+    min-height: 4rem;
+  }
+  .brand {
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+  .nav {
+    display: flex;
+    gap: 1.5rem;
+    flex: 1;
+    font-size: 0.9375rem;
+    font-weight: 550;
+  }
+  .nav a {
+    position: relative;
+    padding-block: 1.2rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .nav a:hover {
+    color: var(--text);
+  }
+  .nav a[aria-current="page"] {
+    color: var(--text);
+  }
+  .nav a[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 -1px 0;
+    height: 2px;
+    background: var(--text);
+  }
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-left: auto;
+  }
+  .tools > * {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 8px;
+    color: var(--muted);
+  }
+  .tools > *:hover {
+    background: var(--surface);
+    color: var(--text);
+  }
+  .lang {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  @media (max-width: 720px) {
+    .head-in {
+      padding-top: 0.5rem;
+    }
+    .nav {
+      order: 3;
+      flex-basis: 100%;
+      gap: 1.25rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav a {
+      padding-block: 0.7rem;
+    }
+  }
+</style>

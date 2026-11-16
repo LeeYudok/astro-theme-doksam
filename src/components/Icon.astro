@@ -1,0 +1,32 @@
+---
+import arrowLeft from "../icons/arrow-left.svg?raw";
+import arrowRight from "../icons/arrow-right.svg?raw";
+import arrowUpRight from "../icons/arrow-up-right.svg?raw";
+import githubLogo from "../icons/github-logo.svg?raw";
+import magnifyingGlass from "../icons/magnifying-glass.svg?raw";
+import moon from "../icons/moon.svg?raw";
+import rss from "../icons/rss.svg?raw";
+import sun from "../icons/sun.svg?raw";
+
+// Phosphor Icons (MIT) — https://github.com/phosphor-icons/core
+const icons = {
+  "arrow-left": arrowLeft,
+  "arrow-right": arrowRight,
+  "arrow-up-right": arrowUpRight,
+  "github-logo": githubLogo,
+  "magnifying-glass": magnifyingGlass,
+  moon,
+  rss,
+  sun,
+};
+
+type Props = { name: keyof typeof icons; size?: string; class?: string };
+const { name, size, class: className } = Astro.props;
+---
+
+<span
+  class:list={["icon", className]}
+  style={size ? `--s:${size}` : undefined}
+  aria-hidden="true"
+  set:html={icons[name]}
+/>

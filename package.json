@@ -1,0 +1,50 @@
+{
+  "name": "astro-theme-doksam",
+  "version": "0.1.0",
+  "description": "Two-column Astro blog theme: a lead section with cover images next to a plain post list. Korean-first typography, light and dark, i18n routes.",
+  "type": "module",
+  "license": "MIT",
+  "author": "LeeYudok",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeeYudok/astro-theme-doksam.git"
+  },
+  "keywords": [
+    "astro",
+    "astro-integration",
+    "astro-theme",
+    "withastro",
+    "blog"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./schema": {
+      "types": "./schema.d.ts",
+      "default": "./schema.js"
+    },
+    "./pages/*": "./src/pages/*",
+    "./layouts/*": "./src/layouts/*",
+    "./components/*": "./src/components/*",
+    "./styles/*": "./src/styles/*"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "schema.js",
+    "schema.d.ts",
+    "src"
+  ],
+  "peerDependencies": {
+    "astro": "^5.0.0"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.12",
+    "pretendard": "^1.3.9"
+  },
+  "devDependencies": {
+    "astro": "^5.16.6"
+  }
+}

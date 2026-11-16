@@ -1,0 +1,44 @@
+---
+import { tagPath } from "../lib/posts.js";
+
+const { tags, lang } = Astro.props;
+---
+
+<ul class="tags">
+  {
+    tags.map(tag => (
+      <li>
+        <a href={tagPath(tag.name ?? tag, lang)}>
+          #{tag.name ?? tag}
+          {tag.count != null && <span>{tag.count}</span>}
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  a {
+    display: inline-flex;
+    gap: 0.45rem;
+    padding: 0.2rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  span {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    align-self: center;
+  }
+</style>

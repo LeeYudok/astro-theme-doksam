@@ -1,0 +1,171 @@
+---
+import { render } from "astro:content";
+import config from "virtual:doksam/config";
+import Base from "../layouts/Base.astro";
+import Icon from "./Icon.astro";
+import Tags from "./Tags.astro";
+import { link, t, tx } from "../lib/i18n.js";
+import { formatDate, getPosts, postPath, sectionOf } from "../lib/posts.js";
+
+const { post } = Astro.props;
+const { title, description, cover, pubDatetime, modDatetime, tags, lang, canonicalURL } =
+  post.data;
+const { Content } = await render(post);
+
+const section = config.sections.find(s => s.id === sectionOf(post));
+const posts = await getPosts(lang);
+
+// 이전·다음은 같은 섹션 안에서만 잇는다.
+const siblings = posts.filter(p => sectionOf(p) === sectionOf(post));
+const index = siblings.findIndex(p => p.id === post.id);
+const newer = index > 0 ? siblings[index - 1] : undefined;
+const older = index >= 0 ? siblings[index + 1] : undefined;
+
+// 다른 언어판은 같은 파일 이름으로 찾는다(ko/foo ↔ en/foo). 없으면 그 언어 첫 화면.
+const alternates: Record<string, string> = {};
+for (const other of config.locales.filter(l => l !== lang)) {
+  const twinId = post.id.replace(new RegExp(`^${lang}/`), `${other}/`);
+  const twin = twinId === post.id ? undefined : (await getPosts(other)).find(p => p.id === twinId);
+  alternates[other] = twin ? postPath(twin) : link("/", other);
+}
+
+const modified = modDatetime && modDatetime > pubDatetime ? modDatetime : undefined;
+---
+
+<Base
+  lang={lang}
+  title={title}
+  description={description}
+  image={cover?.src}
+  canonical={canonicalURL}
+  alternates={alternates}
+  article={{ published: pubDatetime, modified }}
+  section={sectionOf(post)}
+>
+  <div class="wrap read" data-pagefind-body>
+    <header class="post-head">
+      {
+        section && (
+          <a class="section" href={link(`/${section.id}`, lang)}>
+            {tx(section.label, lang)}
+          </a>
+        )
+      }
+      <h1 class="page-title">{title}</h1>
+      <p class="meta">
+        <time class="date" datetime={pubDatetime.toISOString()}>{formatDate(pubDatetime)}</time>
+        {
+          modified && (
+            <span class="date">
+              · {t(lang, "updated")} {formatDate(modified)}
+            </span>
+          )
+        }
+      </p>
+    </header>
+
+    <article class="prose">
+      <Content />
+    </article>
+
+    {
+      tags.length > 0 && (
+        <div class="post-tags" data-pagefind-ignore>
+          <Tags tags={tags} lang={lang} />
+        </div>
+      )
+    }
+
+    {
+      (newer || older) && (
+        <nav class="pager" data-pagefind-ignore>
+          {older ? (
+            <a href={postPath(older)}>
+              <span>
+                <Icon name="arrow-left" size="0.95em" />
+                {t(lang, "prev")}
+              </span>
+              <strong>{older.data.title}</strong>
+            </a>
+          ) : (
+            <span />
+          )}
+          {newer && (
+            <a class="next" href={postPath(newer)}>
+              <span>
+                {t(lang, "next")}
+                <Icon name="arrow-right" size="0.95em" />
+              </span>
+              <strong>{newer.data.title}</strong>
+            </a>
+          )}
+        </nav>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .post-head {
+    margin-bottom: 2.25rem;
+  }
+  .section {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    padding: 0.1rem 0.65rem;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.8125rem;
+    font-weight: 680;
+  }
+  .page-title {
+    text-wrap: balance;
+  }
+  .meta {
+    margin-top: 0.75rem;
+  }
+  .post-tags {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .pager a {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .pager a:hover {
+    border-color: var(--accent);
+  }
+  .pager span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+  .pager strong {
+    font-weight: 650;
+    line-height: 1.45;
+  }
+  .pager .next {
+    text-align: right;
+  }
+  .pager .next span {
+    justify-content: flex-end;
+  }
+  @media (max-width: 560px) {
+    .pager {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

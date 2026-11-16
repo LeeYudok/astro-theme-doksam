@@ -1,0 +1,18 @@
+---
+import Base from "./Base.astro";
+
+// 마크다운 화면(소개 등)의 `layout:` 에 쓴다.
+const { frontmatter = {} } = Astro.props;
+const title = frontmatter.title ?? Astro.props.title;
+---
+
+<Base title={title} description={frontmatter.description}>
+  <div class="wrap read">
+    <header class="page-head">
+      <h1 class="page-title">{title}</h1>
+    </header>
+    <article class="prose" style="margin-top:2rem">
+      <slot />
+    </article>
+  </div>
+</Base>

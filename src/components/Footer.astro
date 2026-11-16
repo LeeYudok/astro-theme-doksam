@@ -1,0 +1,61 @@
+---
+import config from "virtual:doksam/config";
+import Icon from "./Icon.astro";
+import { link } from "../lib/i18n.js";
+
+type Props = { lang: string };
+const { lang } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>&copy; {year} {config.author || config.title}</span>
+    <ul>
+      {
+        config.socials.map(s => (
+          <li>
+            <a href={s.href} rel="me noopener" target="_blank">
+              {s.icon && <Icon name={s.icon} />}
+              {s.label}
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a href={link("/rss.xml", lang).replace(/\/$/, "")}>
+          <Icon name="rss" />
+          RSS
+        </a>
+      </li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    border-top: 1px solid var(--line);
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  .foot-in {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    padding-block: 1.5rem;
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+  }
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  a:hover {
+    color: var(--text);
+  }
+</style>

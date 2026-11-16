@@ -1,0 +1,10 @@
+---
+import PostList from "../components/PostList.astro";
+import { getLang, t } from "../lib/i18n.js";
+import { getPosts } from "../lib/posts.js";
+
+const lang = getLang(Astro.url);
+const posts = await getPosts(lang);
+---
+
+<PostList lang={lang} title={t(lang, "allPosts")} posts={posts} showSection />

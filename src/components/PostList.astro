@@ -1,0 +1,42 @@
+---
+import Base from "../layouts/Base.astro";
+import PostRow from "./PostRow.astro";
+import { t } from "../lib/i18n.js";
+
+// 섹션·태그·전체 글 화면이 함께 쓰는 목록 화면.
+type Props = {
+  lang: string;
+  title: string;
+  posts: any[];
+  showSection?: boolean;
+  alternates?: Record<string, string>;
+};
+const { lang, title, posts, showSection = false, alternates } = Astro.props;
+---
+
+<Base lang={lang} title={title} alternates={alternates}>
+  <div class="wrap read">
+    <header class="page-head">
+      <h1 class="page-title">{title}</h1>
+      <p class="page-desc">{t(lang, "postCount", posts.length)}</p>
+    </header>
+    <slot />
+    {
+      posts.length === 0 ? (
+        <p style="margin-top:1.5rem;color:var(--muted)">{t(lang, "noPosts")}</p>
+      ) : (
+        <ul class="list">
+          {posts.map(post => (
+            <PostRow post={post} variant="full" showSection={showSection} />
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .list :global(li:first-child) {
+    border-top: 0;
+  }
+</style>

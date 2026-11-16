@@ -1,0 +1,109 @@
+---
+import { Image } from "astro:assets";
+import config from "virtual:doksam/config";
+import { tx } from "../lib/i18n.js";
+import { formatDate, postPath, sectionOf } from "../lib/posts.js";
+
+type Props = {
+  post: any;
+  /** compact: 날짜와 제목 한 줄. full: 설명과 작은 대표 이미지까지. */
+  variant?: "compact" | "full";
+  showSection?: boolean;
+};
+const { post, variant = "compact", showSection = false } = Astro.props;
+const { title, description, cover, pubDatetime, lang } = post.data;
+const section = config.sections.find(s => s.id === sectionOf(post));
+---
+
+<li class:list={["row", variant]}>
+  <div class="body">
+    <div class="meta">
+      <time class="date" datetime={pubDatetime.toISOString()}>{formatDate(pubDatetime)}</time>
+      {showSection && section && <span class="section">{tx(section.label, lang)}</span>}
+    </div>
+    <a class="title" href={postPath(post)}>{title}</a>
+    {variant === "full" && <p class="desc">{description}</p>}
+  </div>
+  {
+    variant === "full" && cover && (
+      <a class="thumb" href={postPath(post)} tabindex="-1" aria-hidden="true">
+        <Image src={cover} alt="" width={320} loading="lazy" />
+      </a>
+    )
+  }
+</li>
+
+<style>
+  .row {
+    display: flex;
+    gap: 1.25rem;
+    padding-block: 0.95rem;
+    border-top: 1px solid var(--line);
+  }
+  .body {
+    flex: 1;
+    min-width: 0;
+  }
+  .compact .body {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .section {
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 650;
+  }
+  .title {
+    font-weight: 620;
+    line-height: 1.5;
+  }
+  .full .title {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 1.2rem;
+    font-weight: 720;
+    letter-spacing: -0.015em;
+  }
+  .title:hover {
+    color: var(--accent);
+  }
+  .desc {
+    margin-top: 0.35rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+  .full {
+    padding-block: 1.4rem;
+  }
+  .thumb {
+    flex: none;
+    width: 10rem;
+    align-self: center;
+  }
+  .thumb :global(img) {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+  @media (max-width: 560px) {
+    .thumb {
+      display: none;
+    }
+    .compact .body {
+      grid-template-columns: 1fr;
+      gap: 0.1rem;
+    }
+  }
+</style>

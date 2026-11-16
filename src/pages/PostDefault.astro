@@ -1,0 +1,12 @@
+---
+import config from "virtual:doksam/config";
+import PostView from "../components/PostView.astro";
+import { getPosts } from "../lib/posts.js";
+
+export async function getStaticPaths() {
+  const posts = await getPosts(config.defaultLocale);
+  return posts.map(post => ({ params: { slug: post.id }, props: { post } }));
+}
+---
+
+<PostView post={Astro.props.post} />

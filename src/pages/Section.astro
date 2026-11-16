@@ -1,0 +1,15 @@
+---
+import config from "virtual:doksam/config";
+import PostList from "../components/PostList.astro";
+import { getLang, tx } from "../lib/i18n.js";
+import { getPosts, sectionOf } from "../lib/posts.js";
+
+const lang = getLang(Astro.url);
+const id = Astro.url.pathname.split("/").filter(Boolean).pop();
+const section = config.sections.find(s => s.id === id);
+if (!section) throw new Error(`[astro-theme-doksam] unknown section "${id}"`);
+
+const posts = (await getPosts(lang)).filter(p => sectionOf(p) === section.id);
+---
+
+<PostList lang={lang} title={tx(section.label, lang)} posts={posts} />

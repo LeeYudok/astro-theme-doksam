@@ -1,0 +1,20 @@
+---
+import Base from "../layouts/Base.astro";
+import Tags from "../components/Tags.astro";
+import { getLang, t } from "../lib/i18n.js";
+import { countTags, getPosts } from "../lib/posts.js";
+
+const lang = getLang(Astro.url);
+const tags = countTags(await getPosts(lang));
+---
+
+<Base lang={lang} title={t(lang, "tags")}>
+  <div class="wrap read">
+    <header class="page-head">
+      <h1 class="page-title">{t(lang, "tags")}</h1>
+    </header>
+    <div style="margin-top:1.75rem">
+      <Tags tags={tags} lang={lang} />
+    </div>
+  </div>
+</Base>

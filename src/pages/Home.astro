@@ -1,0 +1,108 @@
+---
+import config from "virtual:doksam/config";
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import PostLead from "../components/PostLead.astro";
+import PostRow from "../components/PostRow.astro";
+import { getLang, link, t, tx } from "../lib/i18n.js";
+import { getPosts, sectionOf } from "../lib/posts.js";
+
+const lang = getLang(Astro.url);
+const posts = await getPosts(lang);
+
+// 앞의 두 섹션을 나란히 놓는다. 글이 없는 칸은 빼고 남은 칸이 폭을 다 쓴다.
+const columns = config.sections
+  .slice(0, 2)
+  .map(section => ({
+    section,
+    posts: posts.filter(p => sectionOf(p) === section.id).slice(0, config.homeCount),
+  }))
+  .filter(column => column.posts.length > 0);
+---
+
+<Base lang={lang}>
+  <div class="wrap">
+    <h1 class="sr-only">{config.title}</h1>
+    <p class="intro">{tx(config.description, lang)}</p>
+
+    {columns.length === 0 && <p class="empty">{t(lang, "noPosts")}</p>}
+
+    <div class="columns" data-count={columns.length}>
+      {
+        columns.map(({ section, posts: [lead, ...rest] }) => (
+          <section aria-labelledby={`sec-${section.id}`}>
+            <header>
+              <h2 id={`sec-${section.id}`}>{tx(section.label, lang)}</h2>
+              <a href={link(`/${section.id}`, lang)}>
+                {t(lang, "more")}
+                <Icon name="arrow-right" size="0.95em" />
+              </a>
+            </header>
+            <PostLead post={lead} />
+            {rest.length > 0 && (
+              <ul class="rest">
+                {rest.map(post => (
+                  <PostRow post={post} />
+                ))}
+              </ul>
+            )}
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</Base>
+
+<style>
+  .intro {
+    max-width: 40rem;
+    margin-bottom: 2.25rem;
+    font-size: 1.0625rem;
+    color: var(--muted);
+  }
+  .empty {
+    color: var(--muted);
+  }
+  .columns {
+    display: grid;
+    gap: 3rem;
+  }
+  section {
+    min-width: 0;
+  }
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    padding-top: 0.7rem;
+    border-top: 2px solid var(--text);
+  }
+  h2 {
+    font-size: 1rem;
+    font-weight: 780;
+    letter-spacing: -0.01em;
+  }
+  header a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  header a:hover {
+    color: var(--accent);
+  }
+  .rest {
+    margin-top: 1.5rem;
+  }
+  @media (min-width: 900px) {
+    .columns[data-count="2"] {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 3.5rem;
+    }
+    .columns[data-count="1"] {
+      max-width: var(--w-read);
+    }
+  }
+</style>

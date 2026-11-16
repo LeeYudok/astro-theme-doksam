@@ -1,0 +1,13 @@
+---
+import PostList from "./PostList.astro";
+import { link } from "../lib/i18n.js";
+import config from "virtual:doksam/config";
+
+const { lang, tag, posts } = Astro.props;
+// 같은 태그가 다른 언어에 없을 수 있어 언어 전환은 태그 목록으로 보낸다.
+const alternates = Object.fromEntries(
+  config.locales.filter(l => l !== lang).map(l => [l, link("/tags", l)])
+);
+---
+
+<PostList lang={lang} title={`#${tag}`} posts={posts} showSection alternates={alternates} />

@@ -1,0 +1,26 @@
+---
+import config from "virtual:doksam/config";
+import TagView from "../components/TagView.astro";
+import { countTags, getPosts, tagSlug } from "../lib/posts.js";
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const locale of config.locales.filter(l => l !== config.defaultLocale)) {
+    const posts = await getPosts(locale);
+    for (const tag of countTags(posts)) {
+      paths.push({
+        params: { locale, tag: tag.slug },
+        props: {
+          tag: tag.name,
+          posts: posts.filter(p => p.data.tags.some(name => tagSlug(name) === tag.slug)),
+        },
+      });
+    }
+  }
+  return paths;
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<TagView lang={Astro.params.locale} tag={tag} posts={posts} />
