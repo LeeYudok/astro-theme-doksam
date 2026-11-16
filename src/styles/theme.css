@@ -14,6 +14,9 @@
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
     "Liberation Mono", monospace;
 
+  /* 화면 위에 붙는 머리말의 높이. 제목 링크로 갈 때 이만큼 비운다. */
+  --head-h: 4rem;
+
   --w-wide: 68rem;
   --w-read: 44rem;
   --gutter: 1.25rem;
@@ -38,6 +41,13 @@
   color-scheme: dark;
 }
 
+/* 좁은 화면에서는 메뉴가 둘째 줄로 내려가 머리말이 높아진다. */
+@media (max-width: 720px) {
+  :root {
+    --head-h: 6rem;
+  }
+}
+
 *,
 *::before,
 *::after {
@@ -45,6 +55,7 @@
 }
 
 html {
+  scroll-padding-top: calc(var(--head-h) + 1rem);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   overflow-y: scroll;
