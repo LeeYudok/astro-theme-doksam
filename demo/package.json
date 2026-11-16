@@ -1,0 +1,19 @@
+{
+  "name": "astro-theme-doksam-demo",
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@12.21.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && pagefind --site dist",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^5.16.6",
+    "astro-theme-doksam": "file:..",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "pagefind": "^1.4.0"
+  }
+}

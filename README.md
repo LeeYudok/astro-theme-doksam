@@ -146,6 +146,26 @@ title: 소개
 }
 ```
 
+## 모서리 바꾸기
+
+모서리 반경은 변수 네 개로 정한다. 사이트의 전역 CSS 에서 덮어쓴다.
+
+| 변수 | 기본값 | 쓰이는 곳 |
+|---|---|---|
+| `--radius` | `10px` | 대표 이미지, 코드블록, 이전·다음 상자, 검색창 |
+| `--radius-control` | `8px` | 머리말 버튼, 목록의 작은 이미지 |
+| `--radius-inline` | `5px` | 글줄 안 코드, 포커스 표시 |
+| `--radius-pill` | `999px` | 섹션 표시, 태그 |
+
+```css
+:root {
+  --radius: 2px;
+  --radius-control: 2px;
+  --radius-inline: 2px;
+  --radius-pill: 2px;
+}
+```
+
 ## 코드 색 바꾸기
 
 코드블록은 밝은 화면에서 `github-light`, 어두운 화면에서 `github-dark` 로 칠한다. 다른 [Shiki 테마](https://shiki.style/themes)를 쓰려면 `astro.config.ts` 에 `light` 와 `dark` 를 함께 적는다.
@@ -161,6 +181,20 @@ export default defineConfig({
 ```
 
 테마는 `defaultColor: false` 를 항상 넣는다. 화면 전환에 맞춰 색을 바꾸려면 Shiki 가 색을 CSS 변수로 내야 하기 때문이다. `shikiConfig.theme`(한 가지 테마)만 적으면 쓰이지 않는다.
+
+## 테마 고치기
+
+`demo/` 는 테마를 쓰는 최소 사이트다. 두 섹션, 두 언어, 대표 이미지가 있는 글과 없는 글, 코드블록·표가 든 글이 들어 있다.
+
+```bash
+pnpm --dir demo install
+pnpm --dir demo build
+node scripts/check-external.mjs demo/dist https://example.com
+```
+
+데모는 테마를 `file:..` 로 복사해 설치한다. 테마를 고친 뒤에는 `pnpm --dir demo install` 을 다시 돌려야 반영된다.
+
+`scripts/check-external.mjs` 는 빌드 결과의 HTML·CSS 가 다른 호스트의 스크립트·스타일·글꼴·이미지를 불러오면 실패한다. 글 본문의 일반 링크는 보지 않는다. PR 과 `main` 푸시마다 GitHub Actions 가 같은 세 단계를 돌린다.
 
 ## 한계
 

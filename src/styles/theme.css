@@ -17,7 +17,11 @@
   --w-wide: 68rem;
   --w-read: 44rem;
   --gutter: 1.25rem;
+  /* 모서리: 표면(이미지·코드블록·상자) / 컨트롤(버튼·작은 이미지) / 글줄 안 조각 / 알약 */
   --radius: 10px;
+  --radius-control: 8px;
+  --radius-inline: 5px;
+  --radius-pill: 999px;
 
   color-scheme: light;
 }
@@ -101,7 +105,7 @@ button {
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: var(--radius-inline);
 }
 
 ::selection {
@@ -308,7 +312,7 @@ main {
 
 .prose :not(pre) > code {
   padding: 0.15em 0.4em;
-  border-radius: 5px;
+  border-radius: var(--radius-inline);
   background: var(--surface);
   font-family: var(--font-mono);
   font-size: 0.875em;
