@@ -182,6 +182,20 @@ export default defineConfig({
 
 테마는 `defaultColor: false` 를 항상 넣는다. 화면 전환에 맞춰 색을 바꾸려면 Shiki 가 색을 CSS 변수로 내야 하기 때문이다. `shikiConfig.theme`(한 가지 테마)만 적으면 쓰이지 않는다.
 
+## 테마 고치기
+
+`demo/` 는 테마를 쓰는 최소 사이트다. 두 섹션, 두 언어, 대표 이미지가 있는 글과 없는 글, 코드블록·표가 든 글이 들어 있다.
+
+```bash
+pnpm --dir demo install
+pnpm --dir demo build
+node scripts/check-external.mjs demo/dist https://example.com
+```
+
+데모는 테마를 `file:..` 로 복사해 설치한다. 테마를 고친 뒤에는 `pnpm --dir demo install` 을 다시 돌려야 반영된다.
+
+`scripts/check-external.mjs` 는 빌드 결과의 HTML·CSS 가 다른 호스트의 스크립트·스타일·글꼴·이미지를 불러오면 실패한다. 글 본문의 일반 링크는 보지 않는다. PR 과 `main` 푸시마다 GitHub Actions 가 같은 세 단계를 돌린다.
+
 ## 한계
 
 - 사이트가 도메인 루트에 있다고 본다. Astro `base` 설정은 지원하지 않는다.
