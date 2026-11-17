@@ -1,6 +1,6 @@
 import rss from "@astrojs/rss";
 import config from "virtual:doksam/config";
-import { getLang, tx } from "../lib/i18n.js";
+import { getLang, prefix, tx } from "../lib/i18n.js";
 import { getPosts, postPath } from "../lib/posts.js";
 
 export async function GET(context) {
@@ -9,7 +9,7 @@ export async function GET(context) {
   return rss({
     title: config.title,
     description: tx(config.description, lang) || config.title,
-    site: context.site,
+    site: new URL(prefix(lang) + "/", context.site).href,
     customData: `<language>${lang}</language>`,
     items: posts.map(post => ({
       title: post.data.title,
