@@ -21,7 +21,7 @@ A two-column Astro blog theme. The home page puts two sections side by side — 
 ## 설치
 
 ```bash
-pnpm add github:LeeYudok/astro-theme-doksam#v0.1.3
+pnpm add github:LeeYudok/astro-theme-doksam#v0.1.4
 ```
 
 `astro.config.ts`:
