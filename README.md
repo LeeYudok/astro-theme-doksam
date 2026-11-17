@@ -20,7 +20,7 @@ A two-column Astro blog theme. The home page puts two sections side by side — 
 ## 설치
 
 ```bash
-pnpm add github:LeeYudok/astro-theme-doksam#v0.1.2
+pnpm add github:LeeYudok/astro-theme-doksam#v0.1.3
 ```
 
 `astro.config.ts`:
