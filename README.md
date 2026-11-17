@@ -13,6 +13,7 @@ A two-column Astro blog theme. The home page puts two sections side by side — 
 - 언어별 주소. 기본 언어는 접두사 없이, 나머지는 `/<언어>/` 아래에 같은 화면을 둔다.
 - 스크롤해도 화면 위에 붙는 머리말.
 - 글 화면 오른쪽에 붙는 목차(TOC). 좁은 화면에서는 본문 위로 올라간다.
+- 스크롤하면 목차에서 지금 읽는 제목을 강조하고, 화면 맨 위에 읽기 진행선을 그린다.
 - 밝게·어둡게 전환. 처음에는 시스템 설정을 따르고, 고른 값은 브라우저에 남는다.
 - CSS 프레임워크를 쓰지 않는다. 색과 글꼴은 `src/styles/theme.css` 의 CSS 변수다.
 - 아이콘은 [Phosphor Icons](https://github.com/phosphor-icons/core)(MIT)의 SVG 를 넣었다.
@@ -20,7 +21,7 @@ A two-column Astro blog theme. The home page puts two sections side by side — 
 ## 설치
 
 ```bash
-pnpm add github:LeeYudok/astro-theme-doksam#v0.1.3
+pnpm add github:LeeYudok/astro-theme-doksam#v0.1.4
 ```
 
 `astro.config.ts`:
