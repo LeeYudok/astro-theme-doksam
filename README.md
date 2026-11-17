@@ -4,13 +4,18 @@ Astro 블로그 테마다. 첫 화면에 두 섹션을 나란히 놓는다. 대�
 
 A two-column Astro blog theme. The home page puts two sections side by side — one led by a cover image, one a plain post list. Korean-first typography (Pretendard), light and dark, locale-prefixed routes. Installed as an Astro integration, so the site keeps only its content and config.
 
-사용 예: <https://leeyudok.github.io/>
+![Doksam 테마 첫 화면](https://raw.githubusercontent.com/LeeYudok/astro-theme-doksam/main/images/screenshot.png)
+
+데모 / Demo: <https://leeyudok.github.io/astro-theme-doksam/> · 사용 예: <https://leeyudok.github.io/> · [English](#english)
+
+Astro 5, 6, 7 에서 쓸 수 있다.
 
 ## 들어 있는 것
 
 - 첫 화면 두 칸. 각 칸은 최신 글 하나를 크게, 나머지를 날짜와 제목으로 보여 준다. 글이 없는 칸은 빠지고 남은 칸이 폭을 쓴다.
 - 섹션별 목록(`/<섹션>/`), 전체 글(`/posts/`), 태그(`/tags/`), 글(`/posts/<id>/`), 검색(`/search/`), RSS(`/rss.xml`), `robots.txt`, 404
 - 언어별 주소. 기본 언어는 접두사 없이, 나머지는 `/<언어>/` 아래에 같은 화면을 둔다.
+- Astro `base` 설정을 따른다. 사이트를 `https://example.com/blog/` 같은 하위 경로에 둘 수 있다.
 - 스크롤해도 화면 위에 붙는 머리말.
 - 글 화면 오른쪽에 붙는 목차(TOC). 좁은 화면에서는 본문 위로 올라간다.
 - 스크롤하면 목차에서 지금 읽는 제목을 강조하고, 화면 맨 위에 읽기 진행선을 그린다.
@@ -21,7 +26,7 @@ A two-column Astro blog theme. The home page puts two sections side by side — 
 ## 설치
 
 ```bash
-pnpm add github:LeeYudok/astro-theme-doksam#v0.1.4
+pnpm add github:LeeYudok/astro-theme-doksam#v0.1.5
 ```
 
 `astro.config.ts`:
@@ -210,11 +215,79 @@ node scripts/check-external.mjs demo/dist https://example.com
 
 데모는 테마를 `file:..` 로 복사해 설치한다. 테마를 고친 뒤에는 `pnpm --dir demo install` 을 다시 돌려야 반영된다.
 
-`scripts/check-external.mjs` 는 빌드 결과의 HTML·CSS 가 다른 호스트의 스크립트·스타일·글꼴·이미지를 불러오면 실패한다. 글 본문의 일반 링크는 보지 않는다. PR 과 `main` 푸시마다 GitHub Actions 가 같은 세 단계를 돌린다.
+`scripts/check-external.mjs` 는 빌드 결과의 HTML·CSS 가 다른 호스트의 스크립트·스타일·글꼴·이미지를 불러오면 실패한다. 글 본문의 일반 링크는 보지 않는다. PR 과 `main` 푸시마다 GitHub Actions 가 Astro 5·6·7 각각으로 같은 세 단계를 돌리고, 하위 경로(`BASE=/astro-theme-doksam`)로도 한 번 더 빌드해 검사한다.
+
+## English
+
+Doksam is an Astro blog theme whose home page puts two sections side by side: one led by a cover image, one a plain list of posts. It is built for sites that publish two kinds of writing, such as a daily market recap next to development notes. It installs as an Astro integration, so your site keeps only its content and config.
+
+![Post page with table of contents](https://raw.githubusercontent.com/LeeYudok/astro-theme-doksam/main/images/post.png)
+
+### Features
+
+- Two-column home page. Each column shows its newest post large and the rest as date and title. A column with no posts is dropped.
+- Section lists, all posts, tags, single post, search, RSS, `robots.txt` and 404.
+- Table of contents beside the post on wide screens, above it on narrow ones. The current section is highlighted and a thin bar shows reading progress.
+- Sticky header. Heading links stop below it.
+- Light and dark. Follows the system setting first and remembers the reader's choice.
+- Locale-prefixed routes. The language switch goes to the translated post when there is one.
+- Works under an Astro `base` path.
+- Self-hosted Pretendard variable font (OFL-1.1) and Phosphor icons (MIT). No external CDN, no CSS framework.
+- Search by [Pagefind](https://pagefind.app/).
+
+### Install
+
+Works with Astro 5, 6 and 7.
+
+```bash
+pnpm add github:LeeYudok/astro-theme-doksam#v0.1.5
+```
+
+```ts
+// astro.config.ts
+import { defineConfig } from "astro/config";
+import doksam from "astro-theme-doksam";
+
+export default defineConfig({
+  site: "https://example.com/",
+  integrations: [
+    doksam({
+      title: "My blog",
+      description: { ko: "한 줄 소개", en: "One-line intro" },
+      author: "Your name",
+      defaultLocale: "en",
+      locales: ["en", "ko"],
+      sections: [
+        { id: "market", label: { ko: "증시", en: "Markets" } },
+        { id: "dev", label: { ko: "개발", en: "Dev" } },
+      ],
+    }),
+  ],
+});
+```
+
+```ts
+// src/content.config.ts
+import { defineCollection } from "astro:content";
+import { glob } from "astro/loaders";
+import { blogSchema } from "astro-theme-doksam/schema";
+
+const blog = defineCollection({
+  loader: glob({ pattern: "**/[^_]*.md", base: "./src/data/blog" }),
+  schema: blogSchema,
+});
+
+export const collections = { blog };
+```
+
+Posts live in a folder per language (`src/data/blog/en/hello.md`). Required front matter: `title`, `description`, `pubDatetime`. Optional: `lang`, `category` (a section id), `cover`, `tags`, `modDatetime`, `draft`, `toc`, `canonicalURL`.
+
+For search, build the index after the site: `astro build && pagefind --site dist`.
+
+See [`demo/`](demo) for a complete site. Colors, corner radii and the header height are CSS variables in `src/styles/theme.css`; override them in your global CSS.
 
 ## 한계
 
-- 사이트가 도메인 루트에 있다고 본다. Astro `base` 설정은 지원하지 않는다.
 - 목록 화면에 쪽 나눔이 없다.
 - 화면 글귀는 한국어와 영어만 들어 있다. 다른 언어는 영어로 나온다.
 

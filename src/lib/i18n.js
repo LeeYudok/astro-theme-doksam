@@ -37,14 +37,27 @@ const STRINGS = {
   },
 };
 
+/** Astro `base` 설정. 끝 슬래시 없이 `""` 또는 `"/sub"`. */
+export const BASE = import.meta.env.BASE_URL.replace(/\/+$/, "");
+
+/** 사이트 안 절대 경로(`/favicon.svg`)에 `base` 를 붙인다. */
+export const withBase = path => `${BASE}${path}`;
+
+/** 주소 경로에서 `base` 를 뗀다. */
+const stripBase = pathname =>
+  BASE && (pathname === BASE || pathname.startsWith(BASE + "/"))
+    ? pathname.slice(BASE.length) || "/"
+    : pathname;
+
 export function getLang(url) {
-  const first = url.pathname.split("/")[1];
+  const first = stripBase(url.pathname).split("/")[1];
   return config.locales.includes(first) && first !== config.defaultLocale
     ? first
     : config.defaultLocale;
 }
 
-export const prefix = lang => (lang === config.defaultLocale ? "" : `/${lang}`);
+/** `base` 와 언어 접두사. 기본 언어는 `base` 만, 나머지는 `base/<언어>`. */
+export const prefix = lang => (lang === config.defaultLocale ? BASE : `${BASE}/${lang}`);
 
 /** 사이트 안 경로에 언어 접두사와 끝 슬래시를 붙인다. */
 export function link(path, lang) {

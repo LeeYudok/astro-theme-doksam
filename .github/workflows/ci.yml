@@ -11,6 +11,12 @@ permissions:
 jobs:
   demo:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 데모의 잠금 파일은 7 이다. 5·6 은 그 자리에서 버전을 바꿔 빌드한다.
+        astro: ["5", "6", "7"]
+    name: demo (astro ${{ matrix.astro }})
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -23,7 +29,17 @@ jobs:
           cache-dependency-path: demo/pnpm-lock.yaml
       - name: Install
         run: pnpm --dir demo install --frozen-lockfile
+      - name: Switch Astro version
+        if: matrix.astro != '7'
+        run: pnpm --dir demo add "astro@^${{ matrix.astro }}"
       - name: Build demo
         run: pnpm --dir demo build
       - name: No external resources
         run: node scripts/check-external.mjs demo/dist https://example.com
+      - name: Build demo under a base path
+        run: pnpm --dir demo build
+        env:
+          SITE: https://leeyudok.github.io
+          BASE: /astro-theme-doksam
+      - name: No external resources (base path)
+        run: node scripts/check-external.mjs demo/dist https://leeyudok.github.io
