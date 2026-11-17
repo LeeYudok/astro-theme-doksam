@@ -8,9 +8,11 @@ import { link, t, tx } from "../lib/i18n.js";
 import { formatDate, getPosts, postPath, sectionOf } from "../lib/posts.js";
 
 const { post } = Astro.props;
-const { title, description, cover, pubDatetime, modDatetime, tags, lang, canonicalURL } =
+const { title, description, cover, pubDatetime, modDatetime, tags, lang, canonicalURL, toc, showTableOfContents } =
   post.data;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+const tocHeadings = (headings ?? []).filter(h => h.depth >= 2 && h.depth <= 3);
+const showToc = toc !== false && showTableOfContents !== false && tocHeadings.length > 0;
 
 const section = config.sections.find(s => s.id === sectionOf(post));
 const posts = await getPosts(lang);
@@ -42,7 +44,7 @@ const modified = modDatetime && modDatetime > pubDatetime ? modDatetime : undefi
   article={{ published: pubDatetime, modified }}
   section={sectionOf(post)}
 >
-  <div class="wrap read" data-pagefind-body>
+  <div class:list={["wrap read", { "has-toc": showToc }]} data-pagefind-body>
     <header class="post-head">
       {
         section && (
@@ -64,44 +66,65 @@ const modified = modDatetime && modDatetime > pubDatetime ? modDatetime : undefi
       </p>
     </header>
 
-    <article class="prose">
-      <Content />
-    </article>
+    <div class="post-body">
+      {
+        showToc && (
+          <aside class="toc" aria-labelledby="toc-title" data-pagefind-ignore>
+            <strong class="toc-title" id="toc-title">{t(lang, "toc")}</strong>
+            <nav>
+              <ul>
+                {tocHeadings.map(h => (
+                  <li class:list={[{ sub: h.depth === 3 }]}>
+                    <a href={`#${h.slug}`}>{h.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </aside>
+        )
+      }
 
-    {
-      tags.length > 0 && (
-        <div class="post-tags" data-pagefind-ignore>
-          <Tags tags={tags} lang={lang} />
-        </div>
-      )
-    }
+      <div class="post-main">
+        <article class="prose">
+          <Content />
+        </article>
 
-    {
-      (newer || older) && (
-        <nav class="pager" data-pagefind-ignore>
-          {older ? (
-            <a href={postPath(older)}>
-              <span>
-                <Icon name="arrow-left" size="0.95em" />
-                {t(lang, "prev")}
-              </span>
-              <strong>{older.data.title}</strong>
-            </a>
-          ) : (
-            <span />
-          )}
-          {newer && (
-            <a class="next" href={postPath(newer)}>
-              <span>
-                {t(lang, "next")}
-                <Icon name="arrow-right" size="0.95em" />
-              </span>
-              <strong>{newer.data.title}</strong>
-            </a>
-          )}
-        </nav>
-      )
-    }
+        {
+          tags.length > 0 && (
+            <div class="post-tags" data-pagefind-ignore>
+              <Tags tags={tags} lang={lang} />
+            </div>
+          )
+        }
+
+        {
+          (newer || older) && (
+            <nav class="pager" data-pagefind-ignore>
+              {older ? (
+                <a href={postPath(older)}>
+                  <span>
+                    <Icon name="arrow-left" size="0.95em" />
+                    {t(lang, "prev")}
+                  </span>
+                  <strong>{older.data.title}</strong>
+                </a>
+              ) : (
+                <span />
+              )}
+              {newer && (
+                <a class="next" href={postPath(newer)}>
+                  <span>
+                    {t(lang, "next")}
+                    <Icon name="arrow-right" size="0.95em" />
+                  </span>
+                  <strong>{newer.data.title}</strong>
+                </a>
+              )}
+            </nav>
+          )
+        }
+      </div>
+    </div>
   </div>
 </Base>
 
@@ -124,6 +147,64 @@ const modified = modDatetime && modDatetime > pubDatetime ? modDatetime : undefi
   }
   .meta {
     margin-top: 0.75rem;
+  }
+  .toc {
+    margin-bottom: 2rem;
+    padding: 0.9rem 1.1rem;
+    border-left: 2px solid var(--line);
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }
+  .toc-title {
+    display: block;
+    margin-bottom: 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .toc nav ul {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .toc nav li.sub {
+    padding-left: 0.9rem;
+  }
+  .toc nav a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .toc nav a:hover {
+    color: var(--accent);
+  }
+  @media (min-width: 1024px) {
+    .wrap.read.has-toc {
+      max-width: var(--w-wide);
+    }
+    .has-toc .post-head {
+      max-width: var(--w-read);
+    }
+    .has-toc .post-body {
+      display: grid;
+      grid-template-columns: minmax(0, var(--w-read)) minmax(13rem, 16rem);
+      justify-content: space-between;
+      align-items: start;
+      gap: 3rem;
+    }
+    .has-toc .post-main {
+      order: 1;
+      min-width: 0;
+    }
+    .has-toc .toc {
+      order: 2;
+      position: sticky;
+      top: calc(var(--head-h) + 1.5rem);
+      max-height: calc(100svh - var(--head-h) - 3rem);
+      overflow-y: auto;
+      margin-bottom: 0;
+      padding: 0.25rem 0 0.25rem 1rem;
+    }
   }
   .post-tags {
     margin-top: 3rem;

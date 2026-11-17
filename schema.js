@@ -18,5 +18,7 @@ export function blogSchema({ image }) {
     draft: z.boolean().optional(),
     featured: z.boolean().optional(),
     canonicalURL: z.string().optional(),
+    toc: z.boolean().optional(),
+    showTableOfContents: z.boolean().optional(),
   });
 }
